@@ -484,7 +484,9 @@ fix (self:
           if stdenv.isLinux then "linux"
           else if stdenv.isDarwin then "darwin"
           else throw "Unsupported platform";
-        platform_machine = targetMachine;
+        # python wheel "arm64" tag on Arm Mac platforms instead of "aarch64" like for linux.
+        # See https://github.com/nix-community/poetry2nix/issues/1609
+        platform_machine = if targetMachine == "aarch64" && stdenv.isDarwin then "arm64" else targetMachine;
         platform_python_implementation =
           let
             impl = python.passthru.implementation;
